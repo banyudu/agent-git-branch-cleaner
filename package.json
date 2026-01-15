@@ -2,16 +2,33 @@
   "name": "agent-git-branch-cleaner",
   "private": true,
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "description": "An AI-powered git branch cleaner agent built with Claude Agent SDK",
+  "main": "dist/index.js",
+  "bin": {
+    "git-branch-cleaner": "./dist/index.js"
   },
-  "keywords": [],
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts"
+  },
+  "keywords": [
+    "git",
+    "branch",
+    "cleaner",
+    "agent",
+    "claude"
+  ],
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.18.2",
   "dependencies": {
-    "@anthropic-ai/claude-agent-sdk": "^0.2.7"
+    "@anthropic-ai/claude-agent-sdk": "^0.2.7",
+    "zod": "^4.3.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
   }
 }

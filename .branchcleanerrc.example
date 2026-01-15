@@ -1,0 +1,12 @@
+{
+  "excludePatterns": [
+    "preview-*",
+    "dev-*",
+    "release-*",
+    "v*"
+  ],
+  "staleDays": 30,
+  "protectedBranches": [
+    "custom-protected-branch"
+  ]
+}
