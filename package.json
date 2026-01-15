@@ -1,0 +1,17 @@
+{
+  "name": "agent-git-branch-cleaner",
+  "private": true,
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.18.2",
+  "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": "^0.2.7"
+  }
+}
