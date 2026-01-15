@@ -77,10 +77,14 @@ USAGE:
 
 OPTIONS:
   -h, --help              Show this help message
+  -v, --verbose           Show detailed logs (tool calls, results, debug info)
   -p, --path <path>       Path to the git repository (default: current directory)
   -c, --config <path>     Path to config file (default: .branchcleanerrc in repo)
   -e, --exclude <pattern> Exclude branches matching pattern (can be used multiple times)
   -s, --stale-days <days> Days of inactivity to consider a branch stale (default: 30)
+
+ENVIRONMENT VARIABLES:
+  ANTHROPIC_API_KEY       API key for Claude (optional if logged in via 'claude' CLI)
 
 EXAMPLES:
   # Clean branches in current directory
@@ -94,6 +98,9 @@ EXAMPLES:
 
   # Multiple exclusions with custom stale threshold
   git-branch-cleaner -e "release-*" -e "hotfix-*" -s 60
+
+  # Run with verbose output to see all tool calls
+  git-branch-cleaner --verbose
 
 CONFIG FILE:
   Create a .branchcleanerrc file in your repo root:
