@@ -143,22 +143,50 @@ function createBranchCleanerMcpServer(repoPath: string) {
         "Check if a branch has been merged into the main/master branch.",
         { branch_name: z.string().describe("The branch name to check") },
         async ({ branch_name }) => {
+          // Determine the main branch (prefer remote if checking a remote branch)
+          const isRemoteBranch = branch_name.includes("/");
           let mainBranch = "main";
-          try {
-            execGit("git rev-parse --verify main", repoPath);
-          } catch {
+          let mainRef = mainBranch;
+
+          // Try to find the main branch
+          if (isRemoteBranch) {
+            // For remote branches, compare against the remote main/master
+            const remote = branch_name.split("/")[0];
             try {
-              execGit("git rev-parse --verify master", repoPath);
-              mainBranch = "master";
+              execGit(`git rev-parse --verify ${remote}/main`, repoPath);
+              mainRef = `${remote}/main`;
+              mainBranch = "main";
             } catch {
-              return { content: [{ type: "text" as const, text: JSON.stringify({ error: "Could not find main or master branch", merged: false }) }] };
+              try {
+                execGit(`git rev-parse --verify ${remote}/master`, repoPath);
+                mainRef = `${remote}/master`;
+                mainBranch = "master";
+              } catch {
+                return { content: [{ type: "text" as const, text: JSON.stringify({ error: `Could not find ${remote}/main or ${remote}/master branch`, merged: false }) }] };
+              }
+            }
+          } else {
+            // For local branches, use local main/master
+            try {
+              execGit("git rev-parse --verify main", repoPath);
+            } catch {
+              try {
+                execGit("git rev-parse --verify master", repoPath);
+                mainBranch = "master";
+                mainRef = "master";
+              } catch {
+                return { content: [{ type: "text" as const, text: JSON.stringify({ error: "Could not find main or master branch", merged: false }) }] };
+              }
             }
           }
 
           try {
-            const mergedBranches = execGit(`git branch --merged ${mainBranch}`, repoPath);
-            const isMerged = mergedBranches.split("\n").some((b) => b.trim().replace("* ", "") === branch_name);
-            return { content: [{ type: "text" as const, text: JSON.stringify({ branch: branch_name, mainBranch, merged: isMerged }) }] };
+            // Use merge-base to check if branch is merged
+            // A branch is merged if merge-base(main, branch) == branch's HEAD commit
+            const mergeBase = execGit(`git merge-base ${mainRef} ${branch_name}`, repoPath);
+            const branchCommit = execGit(`git rev-parse ${branch_name}`, repoPath);
+            const isMerged = mergeBase === branchCommit;
+            return { content: [{ type: "text" as const, text: JSON.stringify({ branch: branch_name, mainBranch: mainRef, merged: isMerged }) }] };
           } catch (error) {
             return { content: [{ type: "text" as const, text: JSON.stringify({ branch: branch_name, error: error instanceof Error ? error.message : "Unknown error", merged: false }) }] };
           }
